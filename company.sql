@@ -164,6 +164,17 @@ SELECT A.Nume, A.Prenume, B.Nume, B.Prenume  FROM (ANGAJATI AS A LEFT OUTER JOIN
 SELECT Nume, Prenume, Adresa FROM ANGAJATI, DEPARTAMENTE WHERE Nume_departament='Cercetare' and ANGAJATI.Nr_departament=DEPARTAMENTE.Nr_departament;
 SELECT Nume, Prenume, Adresa FROM (ANGAJATI JOIN DEPARTAMENTE ON ANGAJATI.Nr_departament=DEPARTAMENTE.Nr_departament) WHERE Nume_departament='Cercetare';
 SELECT Nume, Prenume, Adresa FROM (ANGAJATI NATURAL JOIN DEPARTAMENTE)  WHERE Nume_departament='Cercetare';
+SELECT Nr_proiect, DEPARTAMENTE.Nr_departament, Nume, Data_nastere, Adresa FROM ((PROIECTE NATURAL JOIN DEPARTAMENTE) JOIN ANGAJATI ON CNP_manager=CNP) WHERE Locatie_proiect='Cluj';
+SELECT MAX(Salariu), MIN(Salariu), AVG(Salariu) FROM ANGAJATI;
+SELECT MAX(Salariu), MIN(Salariu), AVG(Salariu) FROM (ANGAJATI NATURAL JOIN DEPARTAMENTE) WHERE Nume_departament='Cercetare';
+SELECT COUNT(*) FROM ANGAJATI;
+SELECT COUNT(*) FROM (ANGAJATI NATURAL JOIN DEPARTAMENTE) WHERE Nume_departament='Cercetare';
+SELECT Nr_departament, COUNT(*), AVG(Salariu) FROM ANGAJATI GROUP BY Nr_departament; 
+SELECT Nr_proiect, Nume_proiect, COUNT(*) FROM (PROIECTE NATURAL JOIN LUCREAZA) GROUP BY Nr_proiect, Nume_proiect;
+SELECT Nr_proiect, Nume_proiect, COUNT(*) FROM (PROIECTE NATURAL JOIN LUCREAZA) GROUP BY Nr_proiect, Nume_proiect HAVING COUNT(*) > 2;
+SELECT Nume, Prenume, 1.1*Salariu FROM ANGAJATI, PROIECTE, LUCREAZA WHERE CNP=CNP_Angajat AND PROIECTE.NR_proiect=LUCREAZA.Nr_proiect AND Nume_proiect='ProdusX';
+SELECT Nume, Prenume, 1.1*Salariu AS 'Salariu marit' FROM ANGAJATI, PROIECTE, LUCREAZA WHERE CNP=CNP_Angajat AND PROIECTE.NR_proiect=LUCREAZA.Nr_proiect AND Nume_proiect='ProdusX';
+SELECT Nume_departament, Nume, Prenume, Nume_proiect FROM DEPARTAMENTE, ANGAJATI, LUCREAZA, PROIECTE WHERE DEPARTAMENTE.Nr_departament=ANGAJATI.Nr_departament AND CNP=CNP_angajat AND LUCREAZA.Nr_proiect=PROIECTE.Nr_proiect ORDER BY Nume_departament ASC, Nume ASC;
 
 
 
