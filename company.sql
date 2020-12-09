@@ -127,6 +127,7 @@ ALTER TABLE ANGAJATI
 
 SELECT data_nastere, adresa FROM ANGAJATI WHERE Prenume='Ion' AND Initiala = 'B' AND Nume = 'Popescu';
 SELECT Nume, Prenume,Adresa FROM ANGAJATI, DEPARTAMENTE WHERE Nume_departament = 'Cercetare' AND DEPARTAMENTE.Nr_departament = ANGAJATI.Nr_departament;
+SELECT Nr_proiect, DEPARTAMENTE.Nr_departament, Prenume, Data_nastere, adresa FROM PROIECTE, DEPARTAMENTE, ANGAJATI WHERE PROIECTE.Nr_departament = DEPARTAMENTE.Nr_departament AND CNP_manager=CNP and Locatie_proiect = 'Cluj';
 SELECT A.Nume, A.Prenume, B.Nume, B.Prenume FROM ANGAJATI AS A, ANGAJATI AS B WHERE A.CNP_superior = B.CNP;
 SELECT CNP FROM ANGAJATI;
 SELECT CNP, Nume_departament FROM ANGAJATI, DEPARTAMENTE;
@@ -155,7 +156,14 @@ SELECT A.Nume, A.Prenume FROM ANGAJATI AS A WHERE A.CNP IN (SELECT CNP_angajat F
 SELECT A.Prenume, A.Nume FROM ANGAJATI AS A, DEPENDENT AS D WHERE A.CNP=D.CNP_angajat AND A.Prenume=D.Nume_dependent;
 SELECT Prenume, Nume FROM ANGAJATI WHERE  EXISTS(SELECT * FROM DEPENDENT WHERE CNP=CNP_angajat AND Prenume=Nume_dependent);
 SELECT Prenume, Nume FROM ANGAJATI WHERE NOT EXISTS (SELECT * FROM DEPENDENT WHERE CNP=CNP_angajat);
-
+SELECT DISTINCT CNP_angajat FROM LUCREAZA WHERE Nr_proiect IN (1,2,3);
+SELECT Nume, Prenume FROM ANGAJATI WHERE CNP_superior IS NULL;
+SELECT A.Nume, A.Prenume, B.Nume, B.Prenume FROM ANGAJATI AS A, ANGAJATI AS B WHERE A.CNP_superior=B.CNP;
+SELECT A.Nume, A.Prenume, B.Nume, B.Prenume  FROM (ANGAJATI AS A JOIN ANGAJATI AS B ON A.CNP_superior=B.CNP);
+SELECT A.Nume, A.Prenume, B.Nume, B.Prenume  FROM (ANGAJATI AS A LEFT OUTER JOIN ANGAJATI AS B ON A.CNP_superior=B.CNP);
+SELECT Nume, Prenume, Adresa FROM ANGAJATI, DEPARTAMENTE WHERE Nume_departament='Cercetare' and ANGAJATI.Nr_departament=DEPARTAMENTE.Nr_departament;
+SELECT Nume, Prenume, Adresa FROM (ANGAJATI JOIN DEPARTAMENTE ON ANGAJATI.Nr_departament=DEPARTAMENTE.Nr_departament) WHERE Nume_departament='Cercetare';
+SELECT Nume, Prenume, Adresa FROM (ANGAJATI NATURAL JOIN DEPARTAMENTE)  WHERE Nume_departament='Cercetare';
 
 
 
