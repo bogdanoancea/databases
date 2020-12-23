@@ -176,6 +176,8 @@ SELECT Nume, Prenume, 1.1*Salariu FROM ANGAJATI, PROIECTE, LUCREAZA WHERE CNP=CN
 SELECT Nume, Prenume, 1.1*Salariu AS 'Salariu marit' FROM ANGAJATI, PROIECTE, LUCREAZA WHERE CNP=CNP_Angajat AND PROIECTE.NR_proiect=LUCREAZA.Nr_proiect AND Nume_proiect='ProdusX';
 SELECT Nume_departament, Nume, Prenume, Nume_proiect FROM DEPARTAMENTE, ANGAJATI, LUCREAZA, PROIECTE WHERE DEPARTAMENTE.Nr_departament=ANGAJATI.Nr_departament AND CNP=CNP_angajat AND LUCREAZA.Nr_proiect=PROIECTE.Nr_proiect ORDER BY Nume_departament ASC, Nume ASC;
 
+CREATE VIEW LucreazaLa AS SELECT Nume, Prenume, Nume_proiect FROM ANGAJATI, PROIECTE, LUCREAZA WHERE CNP=CNP_angajat AND LUCREAZA.Nr_proiect=PROIECTE.Nr_proiect;
+SELECT * FROM LucreazaLa;
 
 
 
