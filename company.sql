@@ -195,7 +195,7 @@ DELIMITER $$
 CREATE PROCEDURE angajati()
 BEGIN
 	SELECT 
-    		Nume, 
+    	Nume, 
 		Prenume, 
 		CNP, 
 		Salariu, 
@@ -274,4 +274,263 @@ SHOW PROCEDURE STATUS LIKE '%angajati%';
 
 
 
+DELIMITER $$
 
+CREATE PROCEDURE nivelAngajat(
+    IN  aCNP INT, 
+    OUT nivel  VARCHAR(20))
+BEGIN
+    DECLARE sal DECIMAL(5) DEFAULT 0;
+
+    SELECT Salariu 
+    INTO sal
+    FROM ANGAJATI
+    WHERE CNP = aCNP;
+
+    IF sal > 45000 THEN
+        SET nivel = 'Senior';
+    END IF;
+END$$
+
+DELIMITER ;
+
+CALL nivelAngajat('888665555', @niv);
+SELECT @niv;
+
+
+DROP PROCEDURE nivelAngajat;
+DELIMITER $$
+CREATE PROCEDURE nivelAngajat( IN  aCNP INT,  OUT nivel  VARCHAR(20))
+BEGIN
+    DECLARE sal DECIMAL(5) DEFAULT 0;
+    SELECT Salariu INTO sal FROM ANGAJATI WHERE CNP = aCNP;
+    IF sal > 45000 THEN
+        SET nivel = 'Senior';
+    ELSE
+        SET nivel = 'Non Senior';
+    END IF;
+END$$
+DELIMITER ;
+
+CALL nivelAngajat('123456789', @niv);
+SELECT @niv;
+
+
+DROP PROCEDURE nivelAngajat;
+DELIMITER $$
+CREATE PROCEDURE nivelAngajat( IN  aCNP INT,  OUT nivel  VARCHAR(20))
+BEGIN
+    DECLARE sal DECIMAL(5) DEFAULT 0;
+    SELECT Salariu INTO sal FROM ANGAJATI WHERE CNP = aCNP;
+    IF sal > 45000 THEN
+        SET nivel = 'Senior';
+    ELSEIF sal <= 45000 AND sal > 30000 THEN
+        SET nivel = 'Middle';
+	ESLE
+		SET nivel = 'Junior';
+    END IF;
+END$$
+DELIMITER ;
+
+CALL nivelAngajat('123456789', @niv);
+SELECT @niv;
+CALL nivelAngajat('888665555', @niv);
+SELECT @niv;
+CALL nivelAngajat('333445555', @niv);
+SELECT @niv;
+
+
+
+
+
+DELIMITER $$
+
+CREATE PROCEDURE tipAngajat(IN  aCNP INT,  OUT tipAng VARCHAR(50))
+BEGIN
+    DECLARE dept VARCHAR(15);
+
+SELECT Nume_departament INTO dept FROM ANGAJATI, DEPARTAMENTE WHERE ANGAJATI.Nr_departament = DEPARTAMENTE.Nr_departament AND CNP=aCNP;
+
+    CASE dept
+		WHEN  'Cercetare' THEN
+		   SET tipAng = 'cercetator';
+		WHEN 'Productie' THEN
+		   SET tipAng = 'inginer';
+		ELSE
+		   SET tipAng = 'functionar';
+	END CASE;
+END$$
+
+DELIMITER ;
+
+CALL tipAngajat('123456789', @tip);
+SELECT @tip;
+CALL tipAngajat('888665555', @tip);
+SELECT @tip;
+CALL tipAngajat('333445555', @tip);
+SELECT @tip;
+
+
+DROP PROCEDURE nivelAngajat;
+DELIMITER $$
+CREATE PROCEDURE nivelAngajat( IN  aCNP INT,  OUT nivel  VARCHAR(20))
+BEGIN
+    DECLARE sal DECIMAL(5) DEFAULT 0;
+    SELECT Salariu INTO sal FROM ANGAJATI WHERE CNP = aCNP;
+    CASE
+		WHEN sal > 45000 THEN
+			SET nivel = 'Senior';
+		WHEN sal <= 45000 AND sal > 30000 THEN
+			SET nivel = 'Middle';
+		ELSE
+			SET nivel = 'Junior';
+    END CASE;
+END$$
+DELIMITER ;
+
+CALL nivelAngajat('123456789', @niv);
+SELECT @niv;
+CALL nivelAngajat('888665555', @niv);
+SELECT @niv;
+CALL nivelAngajat('333445555', @niv);
+SELECT @niv;
+
+
+
+DROP PROCEDURE IF EXISTS LoopProc;
+
+DELIMITER $$
+CREATE PROCEDURE LoopProc()
+BEGIN
+	DECLARE x INT;
+	DECLARE str  VARCHAR(255);
+        
+	SET x = 1;
+	SET str =  '';
+        
+	loop_label:  LOOP
+		IF  x > 20 THEN 
+			LEAVE loop_label;
+		END IF;
+            
+		SET  x = x + 1;
+		IF  (x mod 2) THEN
+			ITERATE  loop_label;
+		ELSE
+			SET  str = CONCAT(str,x,'-');
+		END  IF;
+	END LOOP;
+	SELECT str;
+END$$
+
+DELIMITER ;
+
+CALL LoopProc;
+
+
+DROP PROCEDURE IF EXISTS WhileProc;
+
+DELIMITER $$
+CREATE PROCEDURE WhileProc()
+BEGIN
+	DECLARE x INT;
+	DECLARE str  VARCHAR(255);
+        
+	SET x = 1;
+	SET str =  '';
+        
+	while_label:  WHILE x <= 20 DO
+		SET  x = x + 1;
+		IF  (x mod 2) THEN
+			ITERATE  while_label;
+		ELSE
+			SET  str = CONCAT(str,x,'-');
+		END  IF;
+	END WHILE;
+	SELECT str;
+END$$
+
+DELIMITER ;
+
+CALL WhileProc;
+
+
+
+DROP PROCEDURE IF EXISTS RepeatProc;
+
+DELIMITER $$
+CREATE PROCEDURE RepeatProc()
+BEGIN
+	DECLARE x INT;
+	DECLARE str  VARCHAR(255);
+        
+	SET x = 1;
+	SET str =  '';
+        
+	label: REPEAT
+		SET  x = x + 1;
+		IF  (x mod 2) THEN
+			ITERATE label ;
+		ELSE
+			SET  str = CONCAT(str,x,'-');
+		END IF;
+	UNTIL X >= 20
+	END REPEAT;
+	SELECT str;
+END$$
+
+DELIMITER ;
+
+CALL RepeatProc;
+
+
+DELIMITER $$
+CREATE PROCEDURE createAdrList (INOUT adrList varchar(4000) )
+BEGIN
+	DECLARE finished INTEGER DEFAULT 0;
+	DECLARE adrese varchar(100) DEFAULT "";
+	DEClARE cursorAdresa CURSOR FOR  SELECT Adresa FROM angajati;
+	DECLARE CONTINUE HANDLER FOR NOT FOUND SET finished = 1;
+	OPEN cursorAdresa;
+
+	getAddress: LOOP
+		FETCH cursorAdresa INTO adrese;
+		IF finished = 1 THEN 
+			LEAVE getAddress;
+		END IF;
+		-- build address list
+		SET adrList = CONCAT(adrese,"; ",adrList);
+	END LOOP getAddress;
+	CLOSE cursorAdresa;
+END$$
+DELIMITER ;
+
+SET @adrList = ""; 
+CALL createAdrList(@adrList); 
+SELECT @adrList;
+
+
+
+
+DELIMITER $$
+CREATE FUNCTION nivelAngajat( sal DECIMAL(5))
+RETURNS VARCHAR(25)
+DETERMINISTIC
+BEGIN
+    DECLARE nivel VARCHAR(25);
+	IF sal > 45000 THEN
+		SET nivel = 'Senior';
+	ELSEIF (sal >30000 AND sal <= 45000) THEN
+		SET nivel = 'Middle';
+	ELSE
+		SET nivel = 'Junior';
+	END IF;
+    RETURN nivel;
+END$$
+DELIMITER ;
+
+
+SELECT Nume, Prenume, nivelAngajat(Salariu)FROM ANGAJATI ORDER BY Nume;
+
+SHOW FUNCTION STATUS  WHERE db = 'companie';
+SELECT routine_name FROM information_schema.routines WHERE routine_type = 'FUNCTION' AND routine_schema = 'companie';
