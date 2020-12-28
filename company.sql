@@ -180,4 +180,98 @@ CREATE VIEW LucreazaLa AS SELECT Nume, Prenume, Nume_proiect FROM ANGAJATI, PROI
 SELECT * FROM LucreazaLa;
 
 
+SELECT 
+    Nume, 
+    Prenume, 
+    CNP, 
+    Salariu, 
+    Nr_departament
+FROM
+    ANGAJATI
+ORDER BY Nume;
+
+
+DELIMITER $$
+CREATE PROCEDURE angajati()
+BEGIN
+	SELECT 
+    		Nume, 
+		Prenume, 
+		CNP, 
+		Salariu, 
+		Nr_departament
+	FROM
+	    ANGAJATI
+	ORDER BY Nume;    
+END$$
+DELIMITER ;
+
+
+DELIMITER //
+CREATE PROCEDURE totiAngajatii()
+BEGIN
+	SELECT *  FROM ANGAJATI;
+END //
+DELIMITER ;
+CALL totiAngajatii();
+
+DROP PROCEDURE totiAngajatii;
+
+
+
+DELIMITER //
+CREATE PROCEDURE angajatiDept(IN deptNr INT)
+BEGIN
+	SELECT * 
+ 	FROM ANGAJATI
+	WHERE Nr_departament = deptNr;
+END //
+DELIMITER ;
+
+CALL angajatiDept(5);
+
+DELIMITER $$
+CREATE PROCEDURE nrAngajatiDept (IN  nrDept INT, OUT nrAng INT)
+BEGIN
+	SELECT COUNT(*)
+	INTO nrAng
+	FROM ANGAJATI
+	WHERE Nr_departament = nrDept;
+END$$
+DELIMITER ;
+
+
+DELIMITER $$
+CREATE PROCEDURE SetCounter(INOUT counter INT,  IN inc INT )
+BEGIN
+	SET counter = counter + inc;
+END$$
+DELIMITER ;
+
+
+SET @counter = 1;
+CALL SetCounter(@counter,1); -- 2
+CALL SetCounter(@counter,3); -- 5
+SELECT @counter; -- 5
+
+
+SHOW PROCEDURE STATUS WHERE db='companie';
+SELECT routine_name FROM  information_schema.routines WHERE routine_type = 'PROCEDURE'  AND routine_schema = 'companie';
+
+DELIMITER $$
+CREATE PROCEDURE totalAngajati()
+BEGIN
+    DECLARE totalAng INT DEFAULT 0;
+    SELECT COUNT(*)  INTO totalAng  FROM ANGAJATI;
+    SELECT totalAng;
+END$$
+DELIMITER ;
+
+CALL totalAngajati;
+
+
+SHOW PROCEDURE STATUS LIKE '%angajati%';
+
+
+
 
